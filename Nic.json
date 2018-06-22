@@ -28,7 +28,7 @@
                         "name": "ipconfig1",
                         "properties": {
                             "subnet": {
-                                "id": "[parameters('vnetSettings').subnetRef]"
+                                "id": "[parameters('nicSettings').subnetRef]"
                             },
                             "privateIPAllocationMethod": "[parameters('pipSettings').privateIPAllocationMethod]",
                             "publicIpAddress": {
