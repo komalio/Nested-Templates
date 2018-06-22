@@ -1,0 +1,188 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "type": "string"
+        },
+        "adminPassword": {
+            "type": "securestring"
+        }
+    },
+    "variables": {
+        "location": "[resourceGroup().location]",
+        "suffix": "[substring(uniqueString(resourceGroup().id), 0, 5)]",
+        "deploymentApiVersion":"2017-12-01",
+        "storageSettings": {
+            "diagnosticsStorageAccountName": "[concat('storage',variables('suffix'))]",
+            "suffix": "[substring(uniqueString(resourceGroup().id), 0, 5)]",
+            "location": "[variables('location')]",
+            "diagnosticsStorageAccountType": "Standard_LRS"
+        },
+        "vnetSettings": {
+            "virtualNetworkName": "[concat('vnetwork',variables('suffix'))]",
+            "apiVersion": "2018-02-01",
+            "location": "[variables('location')]",
+            "subnetName": "winsubnet",
+            "addressPrefix": "10.0.0.0/16",
+            "subnetPrefix": "10.0.0.0/24"
+        },
+        
+        "nicSettings": {
+            "networkInterfaceName": "windows-vm47",
+            "apiVersion": "2016-09-01",
+            "location": "[variables('location')]",
+            "privateIPAllocationMethod": "Dynamic"
+        },
+        "pipSettings": {
+            "name": "Windows-VM-ip",
+            "apiVersion": "2017-08-01",
+            "publicIpAddressSku": "Basic",
+            "publicIpAddressType": "Dynamic"
+        },
+        "nsgSettings": {
+            "name": "Windows-VM-nsg",
+            "apiVersion": "2018-01-01",
+            "location": "[variables('location')]"
+        },
+        "vmSettings": {
+            "name": "Windows-VM",
+            "apiVersion": "2017-12-01",
+            "location": "[variables('location')]",
+            "adminUsername": "[parameters('adminUsername')]",
+            "adminPassword": "[parameters('adminPassword')]",
+            "vmSize": "Standard_B1s",
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "windowsServer",
+            "sku": "2016-Datacenter",
+            "version": "latest",
+            "storageAccountType": "Premium_LRS"
+        },
+        "baseUrl": "https://raw.githubusercontent.com/AswiniBevara/Nested-Templates/master/"
+        
+    },
+    "resources": [
+        {
+            "name": "vm",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2017-12-01",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "nic",
+                "storage"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'),'vm.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmSettings": {
+                        "value": "[variables('vmSettings')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "name": "storage",
+            "apiVersion": "[variables('deploymentApiVersion')]",
+            "dependsOn": [],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'),'Storage.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "storageSettings": {
+                        "value": "[variables('storageSettings')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "name": "vnet",
+            "apiVersion": "[variables('deploymentApiVersion')]",
+            "dependsOn": [],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'),'Vnet.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vnetSettings": {
+                        "value": "[variables('vnetSettings')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "name": "nic",
+            "apiVersion": "[variables('deploymentApiVersion')]",
+            "dependsOn": [
+                "nsg",
+                "publicipdaress",
+                "vnet"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'),'Nic.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "nicSettings": {
+                        "value": "[variables('vnetSettings')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "name": "pip",
+            "apiVersion": "[variables('deploymentApiVersion')]",
+            "dependsOn": [],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'),'pip.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "pipSettings": {
+                        "value": "[variables('vnetSettings')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "name": "nsg",
+            "apiVersion": "[variables('deploymentApiVersion')]",
+            "dependsOn": [],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'),'nsg.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "nsgSettings": {
+                        "value": "[variables('vnetSettings')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "adminUsername": {
+            "type": "string",
+            "value": "[parameters('adminUsername')]"
+        }
+    }
+}
