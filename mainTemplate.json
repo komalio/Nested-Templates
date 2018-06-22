@@ -126,7 +126,7 @@
             "apiVersion": "[variables('deploymentApiVersion')]",
             "dependsOn": [
                 "nsg",
-                "publicipdaress",
+                "pip",
                 "vnet"
             ],
             "properties": {
@@ -155,7 +155,7 @@
                 },
                 "parameters": {
                     "pipSettings": {
-                        "value": "[variables('vnetSettings')]"
+                        "value": "[variables('pipSettings')]"
                     }
                 }
             }
