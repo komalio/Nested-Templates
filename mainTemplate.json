@@ -35,18 +35,18 @@
             "privateIPAllocationMethod": "Dynamic"
         },
         "pipSettings": {
-            "name": "Windows-VM-ip",
+            "publicIpAddressName": "Windows-VM-ip",
             "apiVersion": "2017-08-01",
             "publicIpAddressSku": "Basic",
             "publicIpAddressType": "Dynamic"
         },
         "nsgSettings": {
-            "name": "Windows-VM-nsg",
+            "networkSecurityGroupName": "Windows-VM-nsg",
             "apiVersion": "2018-01-01",
             "location": "[variables('location')]"
         },
         "vmSettings": {
-            "name": "Windows-VM",
+            "virtualMachineName": "Windows-VM",
             "apiVersion": "2017-12-01",
             "location": "[variables('location')]",
             "adminUsername": "[parameters('adminUsername')]",
