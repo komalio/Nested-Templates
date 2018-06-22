@@ -29,7 +29,7 @@
         },
         
         "nicSettings": {
-            "networkInterfaceName": "windows-vm47",
+            "networkInterfaceName": "windows-nic",
             "apiVersion": "2016-09-01",
             "location": "[variables('location')]",
             "privateIPAllocationMethod": "Dynamic"
@@ -38,7 +38,8 @@
             "publicIpAddressName": "Windows-VM-ip",
             "apiVersion": "2017-08-01",
             "publicIpAddressSku": "Basic",
-            "publicIpAddressType": "Dynamic"
+            "publicIpAddressType": "Dynamic",
+            "location": "[variables('location')]"
         },
         "nsgSettings": {
             "networkSecurityGroupName": "Windows-VM-nsg",
