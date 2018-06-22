@@ -12,12 +12,12 @@
             "type": "object"
         }
     },
-"variables": {},
- "resources": [
- {
+    "variables": {},
+    "resources": [
+        {
             "name": "[parameters('vmSettings').virtualMachineName]",
             "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2017-12-01",
+            "apiVersion": "2018-02-01",
             "location": "[parameters('vmSettings').location]",
             "properties": {
                 "osProfile": {
