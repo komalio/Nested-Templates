@@ -7,10 +7,8 @@
         },
         "nicSettings": {
             "type": "object"
-        },
-        "storageSettings": {
-            "type": "object"
         }
+       
     },
     "variables": {},
     "resources": [
