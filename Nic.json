@@ -4,6 +4,15 @@
     "parameters": {
         "nicSettings": {
             "type": "object"
+        },
+        "nsgSettings": {
+            "type": "object"
+        },
+        "pipSettings": {
+            "type": "object"
+        },
+        "vnetSettings": {
+            "type": "object"
         }
     },
 "variables": {},
@@ -14,8 +23,8 @@
             "apiVersion": "2016-09-01",
             "location": "[parameters('nicSettings').location]",
             "dependsOn": [
-                 "[concat('Microsoft.Network/publicIpAddresses/', parameters('nicSettings').publicIpAddressName)]",
-                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('nicSettings').networkSecurityGroupName)]"
+                 "[concat('Microsoft.Network/publicIpAddresses/', parameters('pipSettings').publicIpAddressName)]",
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('nsgSettings').networkSecurityGroupName)]"
             ],
             "properties": {
                 "ipConfigurations": [
@@ -23,17 +32,17 @@
                         "name": "ipconfig1",
                         "properties": {
                             "subnet": {
-                                "id": "[parameters('nicSettings').subnetRef]"
+                                "id": "[parameters('vnetSettings').subnetRef]"
                             },
                             "privateIPAllocationMethod": "Dynamic",
                             "publicIpAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', parameters('nicSettings').publicIpAddressName)]"
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', parameters('pipSettings').publicIpAddressName)]"
                             }
                         }
                     }
                 ],
                 "networkSecurityGroup": {
-                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nicSettings').networkSecurityGroupName)]"
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgSettings').networkSecurityGroupName)]"
                 }
             }
         }
