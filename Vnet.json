@@ -18,16 +18,16 @@
                     "addressPrefixes": [
                         "[parameters('vnetSettings').addressPrefix]"
                     ]
-                }
-            },
-            "subnets": [
-                {
-                    "name": "[parameters('vnetSettings').subnetName]",
-                    "properties": {
-                        "addressPrefix": "[parameters('vnetSettings').subnetPrefix]"
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('vnetSettings').subnetName]",
+                        "properties": {
+                            "addressPrefix": "[parameters('vnetSettings').subnetPrefix]"
+                        }
                     }
-                }
-            ]
+                ]
+            }           
         }
     
  ]
