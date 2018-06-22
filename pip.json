@@ -2,49 +2,24 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "nicSettings": {
-            "type": "object"
-        },
-        "nsgSettings": {
-            "type": "object"
-        },
         "pipSettings": {
-            "type": "object"
-        },
-        "vnetSettings": {
             "type": "object"
         }
     },
 "variables": {},
  "resources": [
  {
-            "name": "[parameters('nicSettings').networkInterfaceName]",
-            "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2016-09-01",
-            "location": "[parameters('nicSettings').location]",
-            "dependsOn": [
-                 "[concat('Microsoft.Network/publicIpAddresses/', parameters('pipSettings').publicIpAddressName)]",
-                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('nsgSettings').networkSecurityGroupName)]"
-            ],
+            "name": "[parameters('pipSettings').publicIpAddressName]",
+            "type": "Microsoft.Network/publicIpAddresses",
+            "apiVersion": "2017-08-01",
+            "location": "[parameters('pipSettings').location]",
             "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig1",
-                        "properties": {
-                            "subnet": {
-                                "id": "[parameters('vnetSettings').subnetRef]"
-                            },
-                            "privateIPAllocationMethod": "Dynamic",
-                            "publicIpAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', parameters('pipSettings').publicIpAddressName)]"
-                            }
-                        }
-                    }
-                ],
-                "networkSecurityGroup": {
-                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgSettings').networkSecurityGroupName)]"
-                }
+                "publicIpAllocationMethod": "[parameters('pipSettings').publicIpAddressType]"
+            },
+            "sku": {
+                "name": "[parameters('pipSettings').publicIpAddressSku]"
             }
         }
     ]
+
 }
