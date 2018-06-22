@@ -30,7 +30,7 @@
                             "subnet": {
                                 "id": "[parameters('vnetSettings').subnetRef]"
                             },
-                            "privateIPAllocationMethod": "Dynamic",
+                            "privateIPAllocationMethod": "[parameters('pipSettings').privateIPAllocationMethod]",
                             "publicIpAddress": {
                                 "id": "[resourceId('Microsoft.Network/publicIpAddresses', parameters('pipSettings').publicIpAddressName)]"
                             }
