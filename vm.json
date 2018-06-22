@@ -4,6 +4,12 @@
     "parameters": {
         "vmSettings": {
             "type": "object"
+        },
+        "nicSettings": {
+            "type": "object"
+        },
+        "storageSettings": {
+            "type": "object"
         }
     },
 "variables": {},
@@ -14,8 +20,8 @@
             "apiVersion": "2017-12-01",
             "location": "[parameters('vmSettings').location]",
             "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/', parameters('vmSettings').networkInterfaceName)]",
-                "[concat('Microsoft.Storage/storageAccounts/', parameters('vmSettings').diagnosticsStorageAccountName)]"
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('nicSettings').networkInterfaceName)]",
+                "[concat('Microsoft.Storage/storageAccounts/', parameters('storageSettings').diagnosticsStorageAccountName)]"
             ],
             "properties": {
                 "osProfile": {
@@ -45,14 +51,14 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('vmSettings').networkInterfaceName)]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('nicSettings').networkInterfaceName)]"
                         }
                     ]
                 },
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts', parameters('vmSettings').diagnosticsStorageAccountName), '2015-06-15').primaryEndpoints['blob']]"
+                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts', parameters('storageSettings').diagnosticsStorageAccountName), '2015-06-15').primaryEndpoints['blob']]"
                     }
                 }
             }
