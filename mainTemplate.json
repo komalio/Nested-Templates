@@ -137,7 +137,7 @@
                 },
                 "parameters": {
                     "nicSettings": {
-                        "value": "[variables('vnetSettings')]"
+                        "value": "[variables('nicSettings')]"
                     }
                 }
             }
@@ -173,7 +173,7 @@
                 },
                 "parameters": {
                     "nsgSettings": {
-                        "value": "[variables('vnetSettings')]"
+                        "value": "[variables('nsgSettings')]"
                     }
                 }
             }
