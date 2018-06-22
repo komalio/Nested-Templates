@@ -19,10 +19,6 @@
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2017-12-01",
             "location": "[parameters('vmSettings').location]",
-            "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/', parameters('nicSettings').networkInterfaceName)]",
-                "[concat('Microsoft.Storage/storageAccounts/', parameters('storageSettings').diagnosticsStorageAccountName)]"
-            ],
             "properties": {
                 "osProfile": {
                     "computerName": "[parameters('vmSettings').virtualMachineName]",
