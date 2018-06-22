@@ -137,8 +137,14 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "nicSettings": {
-                        "value": "[variables('nicSettings')]"
+                    "vnetSettings": {
+                        "value": "[variables('vnetSettings')]"
+                    },
+                    "nsgSettings": {
+                        "value": "[variables('nsgSettings')]"
+                    },
+                    "pipSettings": {
+                        "value": "[variables('pipSettings')]"
                     }
                 }
             }
