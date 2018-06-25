@@ -7,10 +7,15 @@
         },
         "nicSettings": {
             "type": "object"
+        },
+        "storageSettings": {
+            "type": "object"
         }
        
     },
-    "variables": {},
+    "variables": {
+        "vmStorageAccountContainerName":"vhds"
+    },
     "resources": [
         {
             "name": "[parameters('vmSettings').virtualMachineName]",
@@ -34,12 +39,13 @@
                         "version": "[parameters('vmSettings').version]"
                     },
                     "osDisk": {
-                        "createOption": "fromImage",
-                        "managedDisk": {
-                            "storageAccountType": "[parameters('vmSettings').storageAccountType]"
-                        }
-                    },
-                    "dataDisks": []
+                        "name": "[concat(parameters('vmSettings').virtualMachineName,'-osDisk')]",
+                        "vhd": {
+                            "uri": "[concat('https://',parameters('storageSettings'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',parameters('vmSettings').virtualMachineName,uniquestring(resourceGroup().id),'-osdisk.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    }
                 },
                 "networkProfile": {
                     "networkInterfaces": [
