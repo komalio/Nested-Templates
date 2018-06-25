@@ -15,7 +15,7 @@
         {
             "name": "[parameters('vmSettings').virtualMachineName]",
             "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2018-02-01",
+            "apiVersion": "2015-06-15",
             "location": "[parameters('vmSettings').location]",
             "properties": {
                 "osProfile": {
