@@ -10,12 +10,9 @@
         }
     },
     "variables": {
-        "location": "[resourceGroup().location]",
-        "suffix": "[substring(uniqueString(resourceGroup().id), 0, 5)]",
-        "deploymentApiVersion":"2017-12-01",
+        
         "storageSettings": {
             "diagnosticsStorageAccountName": "[concat('storage',variables('suffix'))]",
-            "suffix": "[substring(uniqueString(resourceGroup().id), 0, 5)]",
             "location": "[variables('location')]",
             "diagnosticsStorageAccountType": "Standard_LRS"
         },
@@ -32,11 +29,14 @@
             "networkInterfaceName": "windows-nic",
             "apiVersion": "2016-09-01",
             "location": "[variables('location')]",
-            "privateIPAllocationMethod": "Dynamic"
+            "privateIPAllocationMethod": "Dynamic",
+            "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetSettings').virtualNetworkName)]",
+            "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('vnetSettings').subnetName)]"
         },
         "pipSettings": {
             "publicIpAddressName": "Windows-VM-ip",
             "apiVersion": "2017-08-01",
+            "privateIPAllocationMethod": "Dynamic",
             "publicIpAddressSku": "Basic",
             "publicIpAddressType": "Dynamic",
             "location": "[variables('location')]"
@@ -52,22 +52,26 @@
             "location": "[variables('location')]",
             "adminUsername": "[parameters('adminUsername')]",
             "adminPassword": "[parameters('adminPassword')]",
-            "vmSize": "Standard_B1s",
+            "virtualMachineSize": "Standard_B1s",
             "publisher": "MicrosoftWindowsServer",
             "offer": "windowsServer",
             "sku": "2016-Datacenter",
             "version": "latest",
-            "storageAccountType": "Premium_LRS"
+            "storageAccountType": "Premium_LRS",
+            "vmStorageAccountContainerName":"vhds"
         },
+        "location": "westus",
+        "suffix": "[substring(uniqueString(resourceGroup().id), 0, 5)]",
+        "deploymentApiVersion":"2018-05-01",
+        "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetSettings').virtualNetworkName)]",
         "baseUrl": "https://raw.githubusercontent.com/AswiniBevara/Nested-Templates/master/"
         
     },
     "resources": [
         {
-            "name": "vm",
-            "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2017-12-01",
-            "location": "[variables('location')]",
+            "type": "Microsoft.Resources/deployments",
+            "name": "virtalmachine",
+            "apiVersion": "[variables('deploymentApiVersion')]",
             "dependsOn": [
                 "nic",
                 "storage"
@@ -84,6 +88,9 @@
                     },
                     "nicSettings": {
                         "value": "[variables('nicSettings')]"
+                    },
+                    "storageSettings": {
+                        "value": "[variables('storageSettings')]"
                     }
                 }
             }
