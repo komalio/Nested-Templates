@@ -14,7 +14,7 @@
        
     },
     "variables": {
-        "vmStorageAccountContainerName":"vhds"
+       
     },
     "resources": [
         {
@@ -41,7 +41,7 @@
                     "osDisk": {
                         "name": "[concat(parameters('vmSettings').virtualMachineName,'-osDisk')]",
                         "vhd": {
-                            "uri": "[concat('https://',parameters('storageSettings'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',parameters('vmSettings').virtualMachineName,uniquestring(resourceGroup().id),'-osdisk.vhd')]"
+                            "uri": "[concat('https://',parameters('storageSettings'),'.blob.core.windows.net/',parameters('vmSettings'),'/',parameters('vmSettings').virtualMachineName,uniquestring(resourceGroup().id),'-osdisk.vhd')]"
                         },
                         "caching": "ReadWrite",
                         "createOption": "FromImage"
