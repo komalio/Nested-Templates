@@ -36,7 +36,7 @@
                     "osDisk": {
                         "createOption": "fromImage",
                         "managedDisk": {
-                            "storageAccountType": "Premium_LRS"
+                            "storageAccountType": "[parameters('vmSettings').storageAccountType]"
                         }
                     },
                     "dataDisks": []
