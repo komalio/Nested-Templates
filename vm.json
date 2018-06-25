@@ -36,8 +36,7 @@
                         "publisher": "[parameters('vmSettings').publisher]",
                         "offer": "[parameters('vmSettings').offer]",
                         "sku": "[parameters('vmSettings').sku]",
-                        "version": "[parameters('vmSettings').version]",
-                        "diagnosticsStorageAccountName": "parameters('storageSettings').diagnosticsStorageAccountName"         
+                        "version": "[parameters('vmSettings').version]"       
                                },
                     "osDisk": {
                         "name": "[concat(parameters('vmSettings').virtualMachineName,'-osDisk')]",
