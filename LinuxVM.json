@@ -1,0 +1,207 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "type": "string"
+        },
+        "adminPassword": {
+            "type": "securestring"
+        }
+    },
+    "variables": {
+        "storageSettings":{
+            "diagnosticsStorageAccountName": "[concat('storage',variables('suffix'))]",
+            "diagnosticsStorageAccountType": "Standard_LRS",
+            "apiVersion": "2015-06-15",
+            "location": "[variables('location')]"
+        },
+        "vnetSettings":{
+            "virtualNetworkName": "[concat('vnet',variables('suffix'))]",
+            "apiVersion": "2018-02-01",
+            "location": "[variables('location')]",
+            "subnetName": "ubuntusubnet",
+            "addressPrefix": "10.1.0.0/24",
+            "subnetPrefix": "10.1.0.0/24"
+        },
+        "nicSettings":{
+            "networkInterfaceName": "ubuntuvm-nic",
+            "apiVersion": "2016-09-01",
+            "location": "[variables('location')]",
+            "privateIPAllocationMethod": "Dynamic",
+            "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetSettings').virtualNetworkName)]",
+            "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('vnetSettings').subnetName)]"
+        },
+        "pipSettings":{
+            "publicIpAddressName": "ubuntuvm-ip",
+            "publicIpAddressType": "Dynamic",
+            "publicIpAddressSku": "Basic",
+            "apiVersion": "2017-08-01",
+            "location": "[variables('location')]"
+        },
+        "nsgSettings":{
+            "networkSecurityGroupName": "ubuntuvm-nsg",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2017-06-01",
+            "location": "[variables('location')]"
+        },
+        "vmSettings":{
+            "virtualMachineName": "ubuntuvm",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2017-03-30",
+            "location": "[variables('location')]",
+            "adminUsername": "[parameters('adminUsername')]",
+            "adminPassword": "[parameters('adminPassword')]",
+            "virtualMachineSize": "Standard_B1s",
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "17.10",
+            "version": "latest",
+            "diskSizeGB": "30"
+        },
+        "location":"westus",
+        "suffix": "[substring(uniqueString(resourceGroup().id), 0, 5)]",
+        "deploymentApiVersion":"2018-05-01",
+        "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetSettings').virtualNetworkName)]",
+        "baseUrl":"https://raw.githubusercontent.com/AswiniBevara/Nested-Templates/master/"   
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "name": "linuxvm",
+            "apiVersion": "[variables('deploymentApiVersion')]",
+            "dependsOn": [
+                "nic",
+                "storage"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'),'LinuxVmSettings.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmSettings": {
+                        "value": "[variables('vmSettings')]"
+                    },
+                    "nicSettings": {
+                        "value": "[variables('nicSettings')]"
+                    },
+                    "storageSettings": {
+                        "value": "[variables('storageSettings')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "name": "storage",
+            "apiVersion": "[variables('deploymentApiVersion')]",
+            "dependsOn": [],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'),'LinuxStorage.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "storageSettings": {
+                        "value": "[variables('storageSettings')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "name": "vnet",
+            "apiVersion": "[variables('deploymentApiVersion')]",
+            "dependsOn": [],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'),'LinuxVnet.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vnetSettings": {
+                        "value": "[variables('vnetSettings')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "name": "nic",
+            "apiVersion": "[variables('deploymentApiVersion')]",
+            "dependsOn": [
+                "nsg",
+                "pip",
+                "vnet"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'),'LinuxNic.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "nicSettings": {
+                        "value": "[variables('nicSettings')]"
+                    },
+                    "vnetSettings": {
+                        "value": "[variables('vnetSettings')]"
+                    },
+                    "nsgSettings": {
+                        "value": "[variables('nsgSettings')]"
+                    },
+                    "pipSettings": {
+                        "value": "[variables('pipSettings')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "name": "pip",
+            "apiVersion": "[variables('deploymentApiVersion')]",
+            "dependsOn": [],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'),'LinuxPip.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "pipSettings": {
+                        "value": "[variables('pipSettings')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "name": "nsg",
+            "apiVersion": "[variables('deploymentApiVersion')]",
+            "dependsOn": [],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'),'LinuxNsg.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "nsgSettings": {
+                        "value": "[variables('nsgSettings')]"
+                    }
+                }
+            }
+        }
+        
+    ],
+    "outputs": {
+        "adminUsername": {
+            "type": "string",
+            "value": "[parameters('adminUsername')]"
+        }
+    }
+}
