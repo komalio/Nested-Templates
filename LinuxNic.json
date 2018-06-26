@@ -1,0 +1,51 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "nicSettings": {
+            "type": "object"
+        },
+        "vnetSettings":{
+            "type": "object"
+        },
+        "pipSettings":{
+            "type": "object" 
+        },
+        "nsgSettings":{
+            "type": "object"
+        }  
+    },
+    "variables": {},
+    "resources": [
+{
+            "name": "[parameters('nicSettings').networkInterfaceName]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2016-09-01",
+            "location": "[parameters('nicSettings').location]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('vnetSettings').virtualNetworkName)]",
+                "[concat('Microsoft.Network/publicIpAddresses/', parameters('pipSettings').publicIpAddressName)]",
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('nsgSettings').networkSecurityGroupName)]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[parameters('nicSettings').subnetRef]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIpAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', parameters('pipSettings').publicIpAddressName)]"
+                            }
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgSettings').networkSecurityGroupName)]"
+                }
+            }
+        }
+    ]
+}
